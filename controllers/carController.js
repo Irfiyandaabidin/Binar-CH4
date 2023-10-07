@@ -1,54 +1,5 @@
+const imagekit = require('../lib/imagekit');
 const Car = require('../models/carModel');
-
-const carsPage = async(req, res) => {
-    try {
-        const { name } = req.query
-        const condition = {}
-        if(name)
-            condition.name = {
-                $regex: ".*" + name.toLowerCase() + ".*",
-            }
-        const cars = await Car.find().where(
-            condition
-        )
-        res.render("index.ejs", {
-            cars,
-            message: req.flash("message", "")
-        })
-    } catch(err) {
-        res.status(400).json({
-            status: "failed",
-            message: err.message,
-        })
-    }
-}
-
-const createPage = async(req, res) => {
-    try {
-        res.render("create.ejs")
-    } catch (err) {
-        res.status(400).json({
-            status: "failed",
-            message: err.message
-        })
-    }
-}
-
-const editPage = async(req, res) => {
-    try {
-        const car = await Car.findById(
-            req.params.id
-        )
-        res.render("edit.ejs", {
-            car
-        })
-    } catch (err) {
-        res.status(400).json({
-          status: "failed",
-          message: err.message,
-        })
-    }
-}
 
 const createCar = async (req, res) => {
     try {
@@ -57,12 +8,20 @@ const createCar = async (req, res) => {
             price,
             category,
         } = req.body
-        const path = `images/${req.file.filename}`
+        const file = req.file
+        const nameArray = file.originalname.split(".");
+        const extension = nameArray[nameArray.length - 1];
+
+        const img = await imagekit.upload({
+            file: file.buffer,
+            fileName: `IMG-${Date.now()}.${extension}`
+        })
+
         const request = {
             name,
             price,
             category,
-            image: path
+            image: img.url
         }
         await Car.create(request)
         req.flash("message", "Ditambahkan")
@@ -84,7 +43,8 @@ const editCar = async (req, res) => {
             category,
             price
         } = req.body
-        if(req.file == undefined) {
+        const file = req.file
+        if(file == undefined) {
             const car = await Car.findById(id)
             const path = car.image
             console.log(req.body)
@@ -101,12 +61,18 @@ const editCar = async (req, res) => {
             req.flash("message", "Diupdate")
             return res.redirect("/dashboard")
         }
-        const path = `images/${req.file.filename}`
+
+        const nameArray = file.originalname.split(".");
+        const extension = nameArray[nameArray.length - 1];
+        const img = await imagekit.upload({
+            file: file.buffer,
+            fileName: `IMG-${Date.now()}.${extension}`
+        })
         const data = {
             name,
             category,
             price,
-            image : path,
+            image : img.url,
             updatedAt : new Date()
         }
         await Car.findByIdAndUpdate(id, data, {
@@ -135,9 +101,6 @@ const deleteCar = async(req, res) => {
     }
 }
 module.exports = {
-    carsPage,
-    createPage,
-    editPage,
     createCar,
     editCar,
     deleteCar

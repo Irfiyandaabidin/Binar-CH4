@@ -7,6 +7,7 @@ const bodyParser = require("body-parser")
 const app = express();
 
 const carRouter = require("./routes/carRoutes") 
+const adminRouter = require("./routes/adminRoutes") 
 
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
@@ -22,6 +23,7 @@ app.use(
     })
 )
 app.use(flash())
-app.use("/", carRouter)
+app.use("/", adminRouter)
+app.use("/car", carRouter)
 
 module.exports = app;

@@ -1,6 +1,5 @@
 <%- include('./layouts/header') -%>
 
-
     <section class="side__nav">
         <div class="d-flex flex-row">
             <div class="side__bar">
@@ -117,7 +116,7 @@
                                                         <%= car.price %> / hari</h5>
                                                     <div class="row mt-3">
                                                         <p class="p__date"><img src="images/fi_clock.png" height="18px" class="pe-1" alt=""> Updated at
-                                                            <%= car.updateAt %>
+                                                            <%= car.updateAt && momentTime(car.updateAt).tz('Asia/Jakarta').format('DD MMMM YYYY HH:mm') %>
                                                         </p>
                                                     </div>
     
