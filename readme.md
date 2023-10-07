@@ -2,7 +2,7 @@
 
 ## Database diagram
 
-(/public/images/modelcarsbinar.png)
+![model cars](/public/images/modelcarsbinar.png)
 
 ## How to running?
 
